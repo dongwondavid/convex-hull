@@ -1,0 +1,64 @@
+import sys
+input=sys.stdin.readline
+
+
+a=int(input())
+position=[]
+for _ in range(a):
+    position.append(list(map(int,input().split())))
+
+class positionClass:
+    def __init__(self,p,q,i):
+        self.p=p
+        self.q=q
+        self.id=i
+    def __lt__(self,other):
+        if self.q*other.p != self.p*other.q:
+            return self.q*other.p < self.p*other.q
+        if self.q!=other.q: return self.q < other.q
+        return self.p < other.p
+
+positions=[]
+for i in range(a):
+    positions.append(positionClass(position[i][0]-position[0][0],position[i][1]-position[0][1],i))
+
+positions.sort()
+
+stack=[]
+for i in range(a):
+    stack.append(0)
+stack[0] = 0
+stack[1] = 1
+length = 2
+isPolygon = True
+
+
+for i in range(2,a):
+    while length>=2:
+        A=positions[stack[length-2]]
+        B=positions[stack[length-1]]
+        C=positions[i]
+        length-=1
+        ccw=(B.p-A.p)*(C.q-A.q)-(B.q-A.q)*(C.p-A.p)
+        # print(ccw)
+        if ccw==0:
+            isPolygon=False
+            break
+        if ccw>0:
+            length+=1
+            break
+    if not(isPolygon):
+        break
+    stack[length]=i
+    length+=1
+
+
+ans=[]
+if isPolygon:
+    for i in range(length):
+        ans.append(positions[stack[i]].id)
+    ans.sort()
+    for i in range(length):
+        print(position[ans[i]][0],position[ans[i]][1])
+else:
+    print("입력 오류")
